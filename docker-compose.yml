@@ -1,0 +1,24 @@
+version: '3'
+services:
+  postgres:
+    # build: .
+    image: postgres:12
+    restart: always
+    env_file:
+     - .env
+    command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
+    volumes:
+      - ./globals.sql:/docker-entrypoint-initdb.d/1-globals.sql
+      - ./schema.sql:/docker-entrypoint-initdb.d/2-schema.sql
+      - ./data.sql:/docker-entrypoint-initdb.d/3-data.sql
+      - ./pgdata:/var/lib/postgresql/data/
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf
+    ports:
+      - 5440:5432
+    networks:
+      - postgres-network
+volumes:
+  pgdata:
+networks:
+  postgres-network:
+    driver: bridge
