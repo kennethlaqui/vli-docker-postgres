@@ -3,6 +3,7 @@ services:
   postgres:
     # build: .
     image: postgres:12
+    container_name: postgres
     restart: always
     env_file:
      - .env
@@ -17,8 +18,26 @@ services:
       - 5440:5432
     networks:
       - postgres-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: kennethlaqui@yahoo.com
+      PGADMIN_DEFAULT_PASSWORD: m@sterkkl08
+      PGADMIN_LISTEN_PORT: 5480
+    ports:
+      - 5480:5480
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    # links:
+    #   - postgres:pgsql-server
+
 volumes:
   pgdata:
+  db-data:
+  pgadmin-data:
 networks:
   postgres-network:
     driver: bridge
