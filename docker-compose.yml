@@ -1,7 +1,7 @@
 version: '3'
+
 services:
   postgres:
-    # build: .
     image: postgres:12
     container_name: postgres
     restart: always
@@ -24,15 +24,15 @@ services:
     container_name: pgadmin4
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: kennethlaqui@yahoo.com
-      PGADMIN_DEFAULT_PASSWORD: m@sterkkl08
+      PGADMIN_DEFAULT_EMAIL: postgres@postgres.com
+      PGADMIN_DEFAULT_PASSWORD: postgres
       PGADMIN_LISTEN_PORT: 5480
-    ports:
-      - 5480:5480
     volumes:
       - pgadmin-data:/var/lib/pgadmin
-    # links:
-    #   - postgres:pgsql-server
+    ports:
+      - 5480:5480
+    networks:
+      - postgres-network
 
 volumes:
   pgdata:
