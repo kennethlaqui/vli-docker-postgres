@@ -6,7 +6,7 @@ services:
     container_name: postgres
     restart: always
     env_file:
-     - .env
+      - .env
     command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
     volumes:
       - ./globals.sql:/docker-entrypoint-initdb.d/1-globals.sql
@@ -34,10 +34,46 @@ services:
     networks:
       - postgres-network
 
+  redis:
+    image: redis
+    container_name: redis-1
+    restart: always
+    volumes:
+      - ./redis/data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - postgres-network
+
+  pgbackups:
+    image: prodrigestivill/postgres-backup-local
+    container_name: pgbackup
+    restart: always
+    user: postgres:postgres
+    volumes:
+        - ./pgbackup:/backups
+    links:
+        - postgres
+    depends_on:
+        - postgres
+    environment:
+        - POSTGRES_HOST=host.docker.internal
+        - POSTGRES_PORT=5440
+        - POSTGRES_DB=vli
+        - POSTGRES_USER=db_admin
+        - POSTGRES_PASSWORD=db_admin
+        - POSTGRES_EXTRA_OPTS=-Z9 --blobs
+        - SCHEDULE=@daily
+        - BACKUP_KEEP_DAYS=7
+        - BACKUP_KEEP_WEEKS=4
+        - BACKUP_KEEP_MONTHS=6
+        - HEALTHCHECK_PORT=8080
+
 volumes:
   pgdata:
   db-data:
   pgadmin-data:
+    
 networks:
   postgres-network:
     driver: bridge
